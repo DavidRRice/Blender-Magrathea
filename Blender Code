@@ -71,6 +71,15 @@ print(lst_of_sphere)
 
 len_sphere = len(lst_of_sphere) - 1
 
+
+
+
+    
+
+
+
+
+
 outer_material = bpy.data.materials.new("Red Material")
 outer_material.diffuse_color = (1, 0, 0, 1)
 
@@ -86,6 +95,9 @@ for i in range(0, len_sphere):
     bpy.ops.object.modifier_apply(modifier="circle cut")
     
 
+bpy.data.objects["Sphere"].select_set(state=True)
+bpy.ops.object.shade_smooth()
+
     
    
     
@@ -93,37 +105,29 @@ for i in range(0, len_sphere):
 bpy.ops.mesh.primitive_cube_add(size=rof1[0], location=(0.5*rof1[0], 0.5*rof1[0], 0.5*rof1[0]) ,rotation=(0.0, 0.0, 0.0))
 cut_cube = bpy.context.object
 
-for circle in lst_of_sphere:
+for circle in lst_of_sphere[:-1]:
     bool_one = circle.modifiers.new(type="BOOLEAN", name = "bool 1")
     bool_one.object = cut_cube
     bool_one.operation = "DIFFERENCE"
     cut_cube.hide_set(True)
 
-colors = [[0.45, 0.87, 0.09, 1], [0.65, 0.12, 0.34, 1], [0.23, 0.56, 0.78, 1], [0.89, 0.34, 0.67, 1], [0.76, 0.23, 0.09, 1], [0.12, 0.89, 0.56, 1], [0.67, 0.34, 0.89, 1]]
+colors = {'Water (Valencia)':[0.45, 0.87, 0.09, 1], 'Ice VI (ExoPlex)':[0.65, 0.12, 0.34, 1], 'Ice VII (Grande)':[0.23, 0.56, 0.78, 1], "Ice VII' (Grande)":[0.89, 0.34, 0.67, 1], 'Ice X (Grande)':[0.76, 0.23, 0.09, 1], 'Si Pv (Oganov)' :[0.12, 0.89, 0.56, 1], 'Si PPv (Sakai)' : [0.67, 0.34, 0.89, 1], 'Fe hcp (Smith)':[0.67, 0.34, 0.89, 1]}
+
     
 for circle in lst_of_sphere:
-    for color in colors:
-        new_color = bpy.data.materials.new("Material")
-        new_color.diffuse_color = color
-        circle.data.materials.append(new_color)
- 
+    index = lst_of_sphere.index(circle)
+    material =  rofphasechange1[index]
+    color = colors[material.strip()]
+    new_color = bpy.data.materials.new("Material")
+    new_color.diffuse_color = color
+    circle.data.materials.append(new_color)
+    print(color)
+
+print(rofphasechange1)
+
 bpy.context.view_layer.objects.active = lst_of_sphere[0]
 # select the sphere
 
-bpy.data.objects["Sphere"].select_set(True)
-print("Sphere selected")
-bpy.ops.object.mode_set(mode='EDIT')
-print("Edit mode set")
-bpy.ops.mesh.select_all(action='DESELECT')
-print("All vertices deselected")
-bpy.ops.mesh.select_non_manifold()
-print("Non-manifold vertices selected")
-bpy.ops.mesh.normals_make_consistent(inside=False)
-print("Normals made consistent facing outwards")
-bpy.ops.mesh.vertices_smooth()
-print("Vertices smoothed")
-bpy.ops.object.mode_set(mode='OBJECT')
-print("Object mode set")
 
 
 
