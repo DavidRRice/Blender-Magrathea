@@ -1,7 +1,7 @@
 import bpy
 import re
 # selects all objects
-bpy.ops.object.mode_set(mode='OBJECT')
+
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete() 
 
@@ -98,10 +98,6 @@ for i in range(0, len_sphere):
 bpy.data.objects["Sphere"].select_set(state=True)
 bpy.ops.object.shade_smooth()
 
-    
-   
-    
-
 bpy.ops.mesh.primitive_cube_add(size=rof1[0], location=(0.5*rof1[0], 0.5*rof1[0], 0.5*rof1[0]) ,rotation=(0.0, 0.0, 0.0))
 cut_cube = bpy.context.object
 
@@ -111,7 +107,48 @@ for circle in lst_of_sphere[:-1]:
     bool_one.operation = "DIFFERENCE"
     cut_cube.hide_set(True)
 
-colors = {'Water (Valencia)':[0.45, 0.87, 0.09, 1], 'Ice VI (ExoPlex)':[0.65, 0.12, 0.34, 1], 'Ice VII (Grande)':[0.23, 0.56, 0.78, 1], "Ice VII' (Grande)":[0.89, 0.34, 0.67, 1], 'Ice X (Grande)':[0.76, 0.23, 0.09, 1], 'Si Pv (Oganov)' :[0.12, 0.89, 0.56, 1], 'Si PPv (Sakai)' : [0.67, 0.34, 0.89, 1], 'Fe hcp (Smith)':[0.67, 0.34, 0.89, 1]}
+colors = {'Water (Valencia)':[0.45, 0.87, 0.09, 1], 'Ice VI (ExoPlex)':[0.65, 0.12, 0.34, 1], 'Ice VII (Grande)':[0.23, 0.56, 0.78, 1], "Ice VII' (Grande)":[0.89, 0.34, 0.67, 1], 'Ice X (Grande)':[0.76, 0.23, 0.09, 1], 'Si Pv (Oganov)' :[0.12, 0.89, 0.56, 1], 'Si PPv (Sakai)' : [0.67, 0.34, 0.89, 1], 'Fe hcp (Smith)':[0.67, 0.34, 0.89, 1], "Fe liquid (Anderson)": [0.67, 0.34, 0.89, 1], "Fe bcc (Dorogokupets)" :[0.12, 0.89, 0.56, 1], "Fe fcc (Dorogokupets)" : [0.67, 0.34, 0.89, 1], "Fe hcp (Bouchet)": [0.67, 0.34, 0.89, 1], "Fe hcp (Dorogokupets)": [0.67, 0.34, 0.89, 1], "Fe-7Si (Wicks)":[0.67, 0.34, 0.89, 1], "Fe-15Si (Wicks)" :[0.67, 0.34, 0.89, 1], "Fe Dummy":[0.67, 0.34, 0.89, 1],"Si liquid (Mosenfelder)":[0.45, 0.87, 0.09, 1],
+"Si liquid (Wolf)":[0.45, 0.87, 0.09, 1],
+"Fo/Ol (Dorogokupets)":[0.45, 0.87, 0.09, 1],
+"Wds (Dorogokupets)":[0.45, 0.87, 0.09, 1],
+"Rwd (Dorogokupets)":[0.45, 0.87, 0.09, 1],
+"Akm (Dorogokupets et al.)":[0.45, 0.87, 0.09, 1],
+"Fo/Ol (Sotin)":[0.45, 0.87, 0.09, 1],
+"En/Opx (Sotin)":[0.45, 0.87, 0.09, 1],
+"Magnesiowustite (Sotin)":[0.65, 0.12, 0.34, 1],
+"Brg (Oganov)":[0.65, 0.12, 0.34, 1],
+"Brg (Shim)":[0.65, 0.12, 0.34, 1],
+"Pv (Dorogokupets)":[0.65, 0.12, 0.34, 1],
+"Si PPv (Sakai)":[0.65, 0.12, 0.34, 1],
+"Si PPv (Oganov)":[0.65, 0.12, 0.34, 1],
+"PPv (Dorogokupets)":[0.65, 0.12, 0.34, 1],
+"Si (PREM)":[0.65, 0.12, 0.34, 1],
+"Si (PREM, Zeng)":[0.65, 0.12, 0.34, 1],
+"Si (Seager)":[0.65, 0.12, 0.34, 1],
+"Si Dummy":[0.65, 0.12, 0.34, 1],
+
+"Water (ExoPlex)":[0.23, 0.56, 0.78, 1],
+"Water supercritical Dummy":[0.23, 0.56, 0.78, 1],
+
+"Ice Ih":[0.23, 0.56, 0.78, 1],
+"Ice Ih (ExoPlex)":[0.23, 0.56, 0.78, 1],
+"Ice VI (ExoPlex)":[0.23, 0.56, 0.78, 1],
+"Ice VI (Bezacier)":[0.23, 0.56, 0.78, 1],
+"Ice VII (Bezacier)":[0.23, 0.56, 0.78, 1],
+"Ice VII (ExoPlex)":[0.89, 0.34, 0.67, 1],
+"Ice VII (Grande)":[0.89, 0.34, 0.67, 1],
+"Ice VII' (Grande)":[0.89, 0.34, 0.67, 1],
+"Ice VII (FFH2004, Vinet)":[0.89, 0.34, 0.67, 1],
+"Ice VII (FFH2004fit, Vinet fit)":[0.89, 0.34, 0.67, 1],
+"Ice VII (FFH2004, BM)":[0.89, 0.34, 0.67, 1],
+"Ice VII (FFH2004, thermal)":[0.89, 0.34, 0.67, 1],
+"Ice VII (Fei)":[0.76, 0.23, 0.09, 1],
+"Ice X (Grande)":[0.76, 0.23, 0.09, 1],
+"Ice X (Hermann)":[0.76, 0.23, 0.09, 1],
+"Ice (Seager)":[0.76, 0.23, 0.09, 1],
+"Ice Dummy":[0.76, 0.23, 0.09, 1],
+"Ice (FFH 2004)":[0.76, 0.23, 0.09, 1],
+"Ice (FMNR 2009)":[0.76, 0.23, 0.09, 1],}
 
     
 for circle in lst_of_sphere:
@@ -124,15 +161,5 @@ for circle in lst_of_sphere:
     print(color)
 
 print(rofphasechange1)
-
 bpy.context.view_layer.objects.active = lst_of_sphere[0]
 # select the sphere
-
-
-
-
-
-
-
-
-
