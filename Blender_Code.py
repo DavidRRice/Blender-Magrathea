@@ -78,6 +78,7 @@ lst_of_sphere = []
 for a in rof1:
     bpy.ops.mesh.primitive_uv_sphere_add(radius=a, location=(0.0, 0, 0.0), rotation=(0.0, 0.0, 0.0))
     circle = bpy.context.object
+    bpy.ops.object.shade_smooth()
     lst_of_sphere.append(circle)
     
 
@@ -94,8 +95,7 @@ len_sphere = len(lst_of_sphere) - 1
 
 
 
-outer_material = bpy.data.materials.new("Red Material")
-outer_material.diffuse_color = (1, 0, 0, 1)
+
 
 # Assign the green material to the inner circle
 
@@ -109,9 +109,7 @@ for i in range(0, len_sphere):
     bpy.ops.object.modifier_apply(modifier="circle cut")
     
 
-scene = bpy.context.scene
-bpy.data.objects["Sphere.008"].select_set(state=True, view_layer = scene.view_layers[0])
-bpy.ops.object.shade_smooth()
+
 
     
    
