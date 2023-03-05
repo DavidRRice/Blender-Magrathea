@@ -15,6 +15,12 @@ for o in bpy.data.objects:
         
 # INSERT FILE PATH IN BETWEEN QUOTATION MARKS
 file_name = r'C:\Users\srivi\Downloads\StructureEarth.txt'
+#DO REGEX HERE
+title = file_name.split('\\')[-1].split('.')[0]
+
+
+
+
 radii=[] #Set up the lists we need to put data in
 phase=[]
 with open(file_name, "r+") as file: #open file
@@ -86,7 +92,9 @@ print(lst_of_sphere)
 
 len_sphere = len(lst_of_sphere) - 1
 
-
+bpy.ops.object.text_add(align='WORLD', radius = 0.1, location = (0,0,0.1+rof_), rotation = (3.14/2,0,3.14-3.14/4))
+ob=bpy.context.object
+ob.data.body = title
 
 
     
@@ -393,6 +401,7 @@ colors = {
 'Ice X (Grande)':Ice_4,
 "Ice X (Grande)":Ice_4,
 "Ice X (Hermann)":Ice_4,}
+
 
 for circle in lst_of_sphere:
     index = lst_of_sphere.index(circle)
