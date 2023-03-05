@@ -7,7 +7,7 @@ Blender 3D planet builder: Takes in Magrathea outputs and automatically builds r
 
 Step-by-Step Instruction:
 1. Donwload Blender: https://www.blender.org/download/
-2. Once Openend - under New File press General
+2. Once Open - under New File press General
 3. In top bar select Scripting
 4. At the top of the new pop up window select New - this will create a new Text window
 5. Copy and paste code from Blender_Code.py into this new text window
@@ -15,4 +15,5 @@ Step-by-Step Instruction:
 7. On line 17 Replace text inside of the file_name variable (only replace the text in between the quotation marks) with the file path of desired Magrathea output file
 8. Press the Run Script button at top right of Text/Code window
 9. In the top bar press "Layout"
-10. Interior of planet should be complete now!
+10. In the top right (Viewport Shading options) select the 3rd sphere which should look like a sphere that is partially shaded in 
+11. Interior of planet should be complete now!
