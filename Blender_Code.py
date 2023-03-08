@@ -14,7 +14,7 @@ for o in bpy.data.objects:
         bpy.data.objects.remove(o, do_unlink=True)
         
 # INSERT FILE PATH IN BETWEEN QUOTATION MARKS
-file_name = r'C:\Users\srivi\Downloads\StructureEarth.txt'
+file_name = r'C:\Users\srivi\Downloads\Structure443.txt'
 #DO REGEX HERE
 title = file_name.split('\\')[-1].split('.')[0]
 
@@ -76,23 +76,26 @@ my_divisor = 3
 rof1 = [x/ my_divisor for x in rofphasechange]
 print(rof1)
 
-rof_ = rof1[0]
+
 print(rof1)
 
 lst_of_sphere = []
+rof2 = []
 # to make spheres as a incidator for bounds
 for a in rof1:
+    a = 20 * a
     bpy.ops.mesh.primitive_uv_sphere_add(radius=a, location=(0.0, 0, 0.0), rotation=(0.0, 0.0, 0.0))
     circle = bpy.context.object
     bpy.ops.object.shade_smooth()
     lst_of_sphere.append(circle)
+    rof2.append(a)
     
+rof_ = rof2[0]
 
-print(lst_of_sphere)
 
 len_sphere = len(lst_of_sphere) - 1
 
-bpy.ops.object.text_add(align='WORLD', radius = 0.1, location = (0,0,0.1+rof_), rotation = (3.14/2,0,3.14-3.14/4))
+bpy.ops.object.text_add(align='WORLD', radius = 1, location = (0,0,0.1+rof_), rotation = (3.14/2,0,3.14-3.14/4))
 ob=bpy.context.object
 ob.data.body = title
 
@@ -124,7 +127,7 @@ for i in range(0, len_sphere):
    
     
 
-bpy.ops.mesh.primitive_cube_add(size=rof1[0], location=(0.5*rof1[0], 0.5*rof1[0], 0.5*rof1[0]) ,rotation=(0.0, 0.0, 0.0))
+bpy.ops.mesh.primitive_cube_add(size=rof_, location=(0.5*rof_, 0.5*rof_, 0.5*rof_) ,rotation=(0.0, 0.0, 0.0))
 cut_cube = bpy.context.object
 
 for circle in lst_of_sphere[:-1]:
@@ -213,11 +216,11 @@ links.new(texture_2.outputs["Color"], mix.inputs["B"])
 #Darker Red Rock
 scene = bpy.context.scene
 node_tree = scene.node_tree
-darker_rock = bpy.data.materials.new(name="Darker Rock")
-darker_rock.use_nodes = True
-nodes = darker_rock.node_tree.nodes
-links = darker_rock.node_tree.links
-bsdf =  darker_rock.node_tree.nodes['Principled BSDF']
+Rock_2_r = bpy.data.materials.new(name="Lighter Red Rock")
+Rock_2_r.use_nodes = True
+nodes = Rock_2_r.node_tree.nodes
+links = Rock_2_r.node_tree.links
+bsdf =  Rock_2_r.node_tree.nodes['Principled BSDF']
 color_ramp = nodes.new("ShaderNodeValToRGB")
 color_ramp.location = (-300,200)
 tex = nodes.new("ShaderNodeTexNoise")
@@ -231,17 +234,29 @@ color_ramp.color_ramp.elements[1].position = (0.7)
 color_ramp.color_ramp.elements[1].color = (0.156,0.034,0.023,1)
 
 
-#Darkest Red
-darkest_rock = darker_rock.copy()
-darkest_rock.name = "Darkest Red Rock"
-color_ramp = darkest_rock.node_tree.nodes["ColorRamp"]
-color_ramp.color_ramp.elements[1].color = (0.041,0.011,0.008,1)
+#Rock_4 Red
+Rock_3_r = Rock_2_r.copy()
+Rock_3_r.name = "Standard Red Rock"
+color_ramp = Rock_3_r.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[1].color = (0.09,0.02,0.01,1)
+
+#Rock_4 Red
+Rock_4_r = Rock_2_r.copy()
+Rock_4_r.name = "Darker Red Rock"
+color_ramp = Rock_4_r.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[1].color = (0.02,0.005,0.006,1)
 
 #Lighter Rock
-l_rock = darker_rock.copy()
-l_rock.name = "Lighter Rock"
-color_ramp = l_rock.node_tree.nodes["ColorRamp"]
+Rock_1_r = Rock_2_r.copy()
+Rock_1_r.name = "Even Lighter Red Rock"
+color_ramp = Rock_1_r.node_tree.nodes["ColorRamp"]
 color_ramp.color_ramp.elements[1].color = (0.726, 0.138, 0.088,1)
+
+#Lightest Rock
+Rock_r = Rock_2_r.copy()
+Rock_r.name = "Lightest Red Rock"
+color_ramp = Rock_r.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[1].color = (1,0.08,0.05,1)
 
 # Iron Core
 scene = bpy.context.scene
@@ -270,10 +285,10 @@ musgrave.musgrave_type = "MULTIFRACTAL"
 
 
 
-# Darkest Green Rock
-light_green = darker_rock.copy()
-light_green.name = "Light Green Rock"
-color_ramp = light_green.node_tree.nodes["ColorRamp"]
+# Rock_4 Green Rock
+Rock_2 = Rock_2_r.copy()
+Rock_2.name = "Lighter Green Rock"
+color_ramp = Rock_2.node_tree.nodes["ColorRamp"]
 new_color =color_ramp.color_ramp.elements.new(0.350)
 color_ramp.color_ramp.elements[0].position = (0.199)
 color_ramp.color_ramp.elements[2].position = (0.714)
@@ -282,16 +297,28 @@ new_color.color = (0.007,0.007,0.006,1)
 color_ramp.color_ramp.elements[0].color = (0.067,0.114,0.153,1)
 
 #Lighter Green Rock
-darker_green = light_green.copy()
-darker_green.name = "Darker Green Rock"
-color_ramp = darker_green.node_tree.nodes["ColorRamp"]
+Rock_3 = Rock_2.copy()
+Rock_3.name = "Standard Green Rock"
+color_ramp = Rock_3.node_tree.nodes["ColorRamp"]
 color_ramp.color_ramp.elements[2].color = (0.055,0.106,0.060,1)
 
 # Darker Green Rock
-darkest_green = light_green.copy()
-darkest_green.name = "Darkest Green Rock"
-color_ramp = darkest_green.node_tree.nodes["ColorRamp"]
+Rock_4 = Rock_2.copy()
+Rock_4.name = "Darker Green Rock"
+color_ramp = Rock_4.node_tree.nodes["ColorRamp"]
 color_ramp.color_ramp.elements[2].color = (0.026,0.049,0.029,1)
+
+# Even Lighter Green Rock
+Rock_1 = Rock_2.copy()
+Rock_1.name = "Even Lighter Green Rock"
+color_ramp = Rock_1.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[2].color = (0.349,0.508,0.395,1)
+
+# Darker Green Rock
+Rock = Rock_2.copy()
+Rock.name = "Lightest Green Rock"
+color_ramp = Rock.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[2].color = (0.435,1,0.476,1)
 
 #Lava
 scene = bpy.context.scene
@@ -335,20 +362,15 @@ color_ramp.color_ramp.elements[0].position = 0.4
 colors = {
 'Water (Valencia)':water,
 
-'Si Pv (Oganov)' :darker_rock, 
-'Si PPv (Sakai)' : l_rock, 
+'Si Pv (Oganov)' :Rock_3, 
+
 "Si liquid (Mosenfelder)":lava,
 "Si liquid (Wolf)":lava,
-"Si PPv (Sakai)":l_rock,
-"Si PPv (Oganov)":l_rock,
-"PPv (Dorogokupets)":darkest_rock,
-"Si (PREM)":l_rock,
-"Si (PREM, Zeng)": l_rock ,
-"Si (Seager)":l_rock,
-"Si Dummy":l_rock,
+"Fe liquid (Anderson)": lava, 
+
 
 'Fe hcp (Smith)':i_core, 
-"Fe liquid (Anderson)": lava, 
+"Fe liquid (Dorogokupets)" :lava, 
 "Fe bcc (Dorogokupets)" :i_core, 
 "Fe fcc (Dorogokupets)" : i_core,
 "Fe hcp (Bouchet)": i_core, 
@@ -358,17 +380,6 @@ colors = {
 "Fe Dummy":i_core,
 
 
-
-"Fo/Ol (Dorogokupets)":light_green,
-"Wds (Dorogokupets)":darker_green,
-"Rwd (Dorogokupets)":darkest_green,
-"Akm (Dorogokupets et al.)":light_green,
-"Fo/Ol (Sotin)":light_green,
-"En/Opx (Sotin)":light_green,
-"Magnesiowustite (Sotin)":light_green,
-"Brg (Oganov)":darker_rock,
-"Brg (Shim)":darker_rock,
-"Pv (Dorogokupets)":darker_rock,
 
 'Ice (Valencia)':Ice, 
 "Ice (ExoPlex)":Ice,
@@ -400,9 +411,36 @@ colors = {
 
 'Ice X (Grande)':Ice_4,
 "Ice X (Grande)":Ice_4,
-"Ice X (Hermann)":Ice_4,}
+"Ice X (Hermann)":Ice_4,
 
 
+"Brg (Oganov)":Rock_3,
+"Brg (Shim)":Rock_3,
+"Pv (Dorogokupets)":Rock_3,
+"Si (PREM)":Rock_3,
+"Si (PREM, Zeng)": Rock_3 ,
+"Si (Seager)":Rock_3,
+"Si Dummy":Rock_3,
+"Magnesiowustite (Sotin)":Rock_3,
+
+"Si PPv (Sakai)":Rock_4,
+"Si PPv (Oganov)":Rock_4,
+"PPv (Dorogokupets)":Rock_4,
+
+"Rwd (Dorogokupets)":Rock_2,
+"Akm (Dorogokupets et al.)":Rock_2,
+
+"Wds (Dorogokupets)":Rock_1,
+
+"Fo/Ol (Dorogokupets)":Rock,
+"Fo/Ol (Sotin)":Rock,
+"En/Opx (Sotin)":Rock,}
+
+
+
+
+
+   
 for circle in lst_of_sphere:
     index = lst_of_sphere.index(circle)
     material =  rofphasechange1[index].strip()
