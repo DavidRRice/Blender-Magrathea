@@ -74,10 +74,15 @@ rof = rofphasechange[0]
 #needed for the position for colorRamp as it can only go to 1
 my_divisor = 3
 rof1 = [x/ my_divisor for x in rofphasechange]
-print(rof1)
 
-
-print(rof1)
+if rofphasechange1[0].strip() != "Water (Valencia)":
+    surface = rof1[0] * 1.01
+    rof1.insert(0, surface)
+    rofphasehchange1.insert(0, "Exo Planet Surface")
+elif rofphasechange1[0][0:2] == "Ice":
+    surface = rof1[0] * 1.01
+    rof1.insert(0, surface)
+    rofphasehchange1.insert(0, "Exo Planet Ice Surface")
 
 lst_of_sphere = []
 rof2 = []
@@ -356,6 +361,63 @@ texture.inputs["Scale"].default_value = 11
 texture.inputs["Distortion"].default_value = 1.3
 color_ramp.color_ramp.elements[0].position = 0.4
 
+#Surface Mars
+scene = bpy.context.scene
+node_tree = scene.node_tree
+surface = bpy.data.materials.new(name="Exoplanet Surface")
+surface.use_nodes = True
+nodes = surface.node_tree.nodes
+links = surface.node_tree.links
+bsdf =  surface.node_tree.nodes['Principled BSDF']
+
+material = surface.node_tree.nodes["Material Output"]
+color_ramp = nodes.new("ShaderNodeValToRGB")
+color_ramp.location = (-300,300)
+texture = nodes.new("ShaderNodeTexNoise")
+texture.inputs["Roughness"].default_value = 0.600
+texture.inputs["Detail"].default_value = 4.1
+texture.inputs["Scale"].default_value = 3.8
+texture.location = (-600,300)
+texture_2 = nodes.new("ShaderNodeTexNoise")
+texture_2.inputs["Roughness"].default_value = 0.708
+texture_2.inputs["Scale"].default_value = 4.5
+texture_2.inputs["Detail"].default_value = 5.9
+texture_2.location = (-900,300)
+links.new(texture_2.outputs["Color"], texture.inputs["Vector"])
+links.new(texture.outputs["Fac"], color_ramp.inputs[0])
+links.new(color_ramp.outputs["Color"],bsdf.inputs["Base Color"] )
+color_ramp.color_ramp.elements[0].position = 0.382
+color_ramp.color_ramp.elements[1].position = 0.750
+color_ramp.color_ramp.elements[0].color = (0.2,0.1,0.028,1)
+color_ramp.color_ramp.elements[1].color = (0,0,0,1)
+
+#Surface Mars
+scene = bpy.context.scene
+node_tree = scene.node_tree
+ice_surface = bpy.data.materials.new(name="Exoplanet Ice Surface")
+ice_surface.use_nodes = True
+nodes = ice_surface.node_tree.nodes
+links = ice_surface.node_tree.links
+bsdf =  ice_surface.node_tree.nodes['Principled BSDF']
+bump = nodes.new("ShaderNodeBump")
+bump.location = (-300, - 300)
+bump.inputs["Strength"].default_value = 0.692
+bump.inputs["Distance"].default_value = 0.3
+links.new (bump.outputs["Normal"], bsdf.inputs["Normal"])
+bsdf.inputs["Transmission"].default_value = 1
+color_ramp = nodes.new("ShaderNodeValToRGB")
+color_ramp.location = (-300,300)
+links.new(color_ramp.outputs["Color"],bsdf.inputs["Roughness"] )
+texture = nodes.new("ShaderNodeTexNoise")
+texture.location = (-900,0)
+texture.inputs["Roughness"].default_value = 0.483
+texture.inputs["Detail"].default_value = 14.5
+texture.inputs["Scale"].default_value = 5.6
+links.new(texture.outputs["Color"], bump.inputs["Height"])
+links.new(texture.outputs["Color"], color_ramp.inputs["Fac"])
+color_ramp.color_ramp.elements[0].position = 0.136
+color_ramp.color_ramp.elements[1].position = 0.805
+
 
 
 
@@ -434,7 +496,10 @@ colors = {
 
 "Fo/Ol (Dorogokupets)":Rock,
 "Fo/Ol (Sotin)":Rock,
-"En/Opx (Sotin)":Rock,}
+"En/Opx (Sotin)":Rock,
+
+"Exo Planet Surface": surface,
+"Exo Planet Ice Surface": ice_surface}
 
 
 
