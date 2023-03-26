@@ -1,5 +1,8 @@
 import bpy
 import re
+import math
+
+
 # selects all objects
 
 for material in bpy.data.materials:
@@ -13,10 +16,10 @@ for o in bpy.data.objects:
     if o.hide_viewport or o.hide_render or o.hide_get(): 
         bpy.data.objects.remove(o, do_unlink=True)
         
-# INSERT FILE PATH IN BETWEEN QUOTATION MARKS
-file_name = r'C:\Users\srivi\Downloads\Structure443.txt'
+# INSERT FILE PATH OF MAGRATHEA OUTPUT DATA IN BETWEEN QUOTATION MARKS
+file_name = r''
 #DO REGEX HERE
-title = file_name.split('\\')[-1].split('.')[0]
+
 
 
 
@@ -76,13 +79,13 @@ my_divisor = 3
 rof1 = [x/ my_divisor for x in rofphasechange]
 
 if rofphasechange1[0].strip() != "Water (Valencia)":
-    surface = rof1[0] * 1.01
+    surface = rof1[0] * 1.015
     rof1.insert(0, surface)
-    rofphasehchange1.insert(0, "Exo Planet Surface")
+    rofphasechange1.insert(0, "Exo Planet Surface")
 elif rofphasechange1[0][0:2] == "Ice":
-    surface = rof1[0] * 1.01
+    surface = rof1[0] * 1.015
     rof1.insert(0, surface)
-    rofphasehchange1.insert(0, "Exo Planet Ice Surface")
+    rofphasechange1.insert(0, "Exo Planet Ice Surface")
 
 lst_of_sphere = []
 rof2 = []
@@ -100,9 +103,7 @@ rof_ = rof2[0]
 
 len_sphere = len(lst_of_sphere) - 1
 
-bpy.ops.object.text_add(align='WORLD', radius = 1, location = (0,0,0.1+rof_), rotation = (3.14/2,0,3.14-3.14/4))
-ob=bpy.context.object
-ob.data.body = title
+
 
 
     
@@ -337,6 +338,7 @@ material = lava.node_tree.nodes["Material Output"]
 material.location = (500,285)
 l = material.inputs[0].links[0]
 links.remove(l)
+
 shader = nodes.new("ShaderNodeMixShader")
 shader.location = (306,283)
 links.new(bsdf.outputs[0], shader.inputs[1])
@@ -516,7 +518,28 @@ for circle in lst_of_sphere:
     circle.data.materials.append(color)
     print(color)
 
-print(rofphasechange1)
+#ADDING SUN AND CAMERA
+    
+light_data = bpy.data.lights.new(name="Sun", type='SUN')
+light_data.energy = 10
+light_object = bpy.data.objects.new(name="Sun", object_data=light_data)
+
+# link light object
+bpy.context.collection.objects.link(light_object)
+
+# make it active 
+bpy.context.view_layer.objects.active = light_object
+
+#change location
+light_object.location = (5, 5, 5)
+light_object.rotation_euler = (math.radians(-47.7), math.radians(36), math.radians(-16.3))
 
 bpy.context.view_layer.objects.active = lst_of_sphere[0]
 # select the sphere
+
+camera_data = bpy.data.cameras.new(name='Camera')
+camera_object = bpy.data.objects.new('Camera', camera_data)
+bpy.context.scene.collection.objects.link(camera_object)
+camera_object.location = (rof_ + 30,11,6.7)
+camera_object.rotation_euler = (math.radians(80), math.radians(0), math.radians(106))
+cut_cube.hide_render = True
