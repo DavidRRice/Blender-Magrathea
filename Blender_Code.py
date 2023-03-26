@@ -212,12 +212,15 @@ mix.location = (-600,100)
 links.new(mix.outputs["Result"], bump.inputs["Height"])
 texture = nodes.new("ShaderNodeTexNoise")
 texture.inputs["Roughness"].default_value = 0.717
+texture.inputs["Scale"].default_value = 20.0
 texture.location = (-900,200)
 links.new(texture.outputs["Color"], mix.inputs["A"])
 texture_2 = nodes.new("ShaderNodeTexNoise")
-texture_2.inputs["Roughness"].default_value = 0.392
+texture_2.inputs["Roughness"].default_value = 0.215
+texture_2.inputs["Scale"].default_value = 20.0
 texture_2.location = (-900,-200)
 links.new(texture_2.outputs["Color"], mix.inputs["B"])
+
 
 #Darker Red Rock
 scene = bpy.context.scene
