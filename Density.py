@@ -144,16 +144,48 @@ for line in lines[1:-1]:
     dens.append(float(div[4])) #density g/cm^3
     inf.close()
     
-mindens=1  #minimum density for colormap
-maxdens=15 #maximum desnity for colormap
+#Color Options: viridis, plasma, summer, autumn, winter, neon, gem, eclipse, sepia
+file_name = r"C:\Users\drice\OneDrive\Desktop\Blender\colormaps.txt"
+colorname='plasma' #choose name from above
+inf=open(file_name,'r') ##file of 1000 points from each matplotlib colormaps
+lines=inf.readlines()
+for l in range(len(lines)):
+    div=re.split('\s',lines[l])
+    if div[1]==colorname: #Find line with name provided
+        cmap=ast.literal_eval(lines[l+1]) #Cmap=list of 1000 colors
 
-denscolors=[] #list of colors 
-densrad=rad[::42]  #list of radii where denscolors colors occur
-for i in dens[::42]: #Read every 5th value of density and radii
-    normalize=(maxdens-i)/(maxdens-mindens)  #Find position from 0-1 of density between min and max desnity
-    location=int(normalize*1000) #Round the above number to nearest thousandth and multiply by 1000
-    denscolors.append(cmap[location]) #get colors to apply to given density
+
+inf=open(r"C:\Users\drice\OneDrive\Desktop\Blender\StructMant4.txt",'r')
+lines=inf.readlines()
+rad=[]
+dens=[]
+for line in lines[1:-1]:
+    div=re.split('\s{2,}',line)
+    rad.append(float(div[1])) #radius Earth Radii
+    dens.append(float(div[4])) #density g/cm^3
+    inf.close()
     
+mindens=3  #minimum density for colormap
+maxdens=6 #maximum desnity for colormap
+stepsize=(maxdens-mindens)/40
+
+#denscolors=[] #list of colors 
+#densrad=rad[::42]  #list of radii where denscolors colors occur
+#for i in dens[::42]: #Read every 5th value of density and radii
+#    normalize=(maxdens-i)/(maxdens-mindens)  #Find position from 0-1 of density between min and max desnity
+#    location=int(normalize*1000) #Round the above number to nearest thousandth and multiply by 1000
+#    denscolors.append(cmap[location]) #get colors to apply to given density
+    
+denscolors=[]
+densrad=[]
+dumbdens=0
+for i in range(len(dens)):
+    if dens[i] > dumbdens+stepsize:
+        normalize=(maxdens-dens[i])/(maxdens-mindens)  #Find position from 0-1 of density between min and max desnity
+        location=int(normalize*1000) #Round the above number to nearest thousandth and multiply by 1000
+        denscolors.append(cmap[location]) #get colors to apply to given density 
+        densrad.append(rad[i])
+        dumbdens=dens[i]
 
 #Surface Mars
 scene = bpy.context.scene
