@@ -8,7 +8,6 @@ import math
 for material in bpy.data.materials:
     material.user_clear()
     bpy.data.materials.remove(material)
-    
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete() 
 
@@ -16,8 +15,8 @@ for o in bpy.data.objects:
     if o.hide_viewport or o.hide_render or o.hide_get(): 
         bpy.data.objects.remove(o, do_unlink=True)
         
-# INSERT FILE PATH OF MAGRATHEA OUTPUT DATA IN BETWEEN QUOTATION MARKS
-file_name = r''
+# INSERT FILE PATH IN BETWEEN QUOTATION MARKS
+file_name = r'C:\Users\srivi\Downloads\StructureEarth.txt'
 #DO REGEX HERE
 
 
@@ -79,11 +78,11 @@ my_divisor = 3
 rof1 = [x/ my_divisor for x in rofphasechange]
 
 if rofphasechange1[0].strip() != "Water (Valencia)":
-    surface = rof1[0] * 1.015
+    surface = rof1[0] * 1.001
     rof1.insert(0, surface)
     rofphasechange1.insert(0, "Exo Planet Surface")
 elif rofphasechange1[0][0:2] == "Ice":
-    surface = rof1[0] * 1.015
+    surface = rof1[0] * 1.001
     rof1.insert(0, surface)
     rofphasechange1.insert(0, "Exo Planet Ice Surface")
 
@@ -176,6 +175,30 @@ node = Ice_2.node_tree.nodes["Principled BSDF"]
 node.inputs["Base Color"].default_value = (0.044,0.155,0.509,1)
 
 #Ice Dark 3
+scene = bpy.context.scene
+node_tree = scene.node_tree
+Ice_3 = bpy.data.materials.new(name="Ice 3")
+Ice_3.use_nodes = True
+nodes = Ice_3.node_tree.nodes
+bsdf =  Ice_3.node_tree.nodes['Principled BSDF']
+links = Ice_3.node_tree.links
+# Add a diffuse shader and set its location:    
+texture = nodes.new("ShaderNodeTexNoise")
+texture.location = (-600,100)
+coord = nodes.new("ShaderNodeTexCoord")
+coord.location = (-600,100)
+color_ramp = nodes.new("ShaderNodeValToRGB")
+color_ramp.location = (-300,200)
+links.new(coord.outputs["Object"], texture.inputs["Vector"])
+links.new(texture.outputs["Fac"], color_ramp.inputs["Fac"])
+links.new(color_ramp.outputs["Color"], bsdf.inputs["Base Color"])
+new_color = color_ramp.color_ramp.elements.new(0.591)
+color_ramp.color_ramp.elements[1].color = (0.019,0.034,0.5,1)
+
+
+bsdf.inputs["Base Color"].default_value = (0.08,0.296,1,1)
+bsdf.inputs["Transmission"].default_value = (0.909)
+
 Ice_3 = Ice.copy()
 Ice_3.name = "Ice 3"
 node = Ice_3.node_tree.nodes["Principled BSDF"]
@@ -212,15 +235,13 @@ mix.location = (-600,100)
 links.new(mix.outputs["Result"], bump.inputs["Height"])
 texture = nodes.new("ShaderNodeTexNoise")
 texture.inputs["Roughness"].default_value = 0.717
-texture.inputs["Scale"].default_value = 20.0
 texture.location = (-900,200)
 links.new(texture.outputs["Color"], mix.inputs["A"])
 texture_2 = nodes.new("ShaderNodeTexNoise")
-texture_2.inputs["Roughness"].default_value = 0.215
-texture_2.inputs["Scale"].default_value = 20.0
+texture_2.inputs["Roughness"].default_value = 0.392
+texture_2.inputs["Scale"].default_value = 20
 texture_2.location = (-900,-200)
 links.new(texture_2.outputs["Color"], mix.inputs["B"])
-
 
 #Darker Red Rock
 scene = bpy.context.scene
@@ -328,6 +349,16 @@ Rock = Rock_2.copy()
 Rock.name = "Lightest Green Rock"
 color_ramp = Rock.node_tree.nodes["ColorRamp"]
 color_ramp.color_ramp.elements[2].color = (0.435,1,0.476,1)
+
+
+# Blueish Green Rock
+Rock_2B = Rock_3.copy()
+Rock_2B.name = "Lighter Blue Rock"
+color_ramp = Rock_2B.node_tree.nodes["ColorRamp"]
+color_ramp.color_ramp.elements[0].position = (0.454)
+color_ramp.color_ramp.elements[1].position = (0.682)
+color_ramp.color_ramp.elements[2].position = (0.801)
+
 
 #Lava
 scene = bpy.context.scene
@@ -494,8 +525,8 @@ colors = {
 "Si PPv (Oganov)":Rock_4,
 "PPv (Dorogokupets)":Rock_4,
 
-"Rwd (Dorogokupets)":Rock_2,
-"Akm (Dorogokupets et al.)":Rock_2,
+"Rwd (Dorogokupets)":Rock_2B,
+"Akm (Dorogokupets et al.)":Rock_2B,
 
 "Wds (Dorogokupets)":Rock_1,
 
@@ -520,6 +551,7 @@ for circle in lst_of_sphere:
     
     circle.data.materials.append(color)
     print(color)
+    
 
 #ADDING SUN AND CAMERA
     
