@@ -17,3 +17,11 @@ Step-by-Step Instruction:
 9. In the top bar press "Layout"
 10. In the top right (Viewport Shading options) select the 3rd sphere which should look like a sphere that is partially shaded in 
 11. Interior of planet should be complete now!
+
+
+How to change the way a material looks:
+If you dont like the way a layer looks then select it in the "Layout" tab. Click on the sphere that you want to change and it will get outlined in yellow. Alternatively, you can select a sphere via the 'Scene Collecction" section in the top right. Once a sphere is selected, click on the "Shading" tab in the top toolbar. On the bottom window ensure that "Use Nodes" is checked. Now you should see the Node Setup (bottom window) for the selected material (top window). Each box represents a node and they each code for an aspect of the material. 
+
+If you want to alter the way the material looks you can simply click on a factor in one of the nodes such as Roughness, Sheen, Scale, etc, and entering in a new number. It will get updated in the top window. To make more drastic changes you can also add new nodes via the "Add" button in the top left of the bottom window. This video provides a good introduction to nodes and how to alter materials using them: https://www.youtube.com/watch?v=moKFSMJwpmE&ab_channel=GrantAbbitt. This link gives an overview on what each node does: https://docs.blender.org/manual/en/latest/render/shader_nodes/index.html.
+
+The above steps will show you how to change nodes manually (it will not save if you run the program again). If you would like to change a material programmatically (permanent) you can go to the "Scripting" tab in the top toolbar. Scroll down to 
