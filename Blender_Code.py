@@ -3,7 +3,7 @@ import re
 import math
 
 
-# selects all objects
+# selects all objects and deletes them to get fresh slate
 
 for material in bpy.data.materials:
     material.user_clear()
@@ -16,8 +16,8 @@ for o in bpy.data.objects:
         bpy.data.objects.remove(o, do_unlink=True)
         
 # INSERT FILE PATH IN BETWEEN QUOTATION MARKS
-file_name = r'C:\Users\srivi\Downloads\StructureEarth.txt'
-#DO REGEX HERE
+file_name = r''
+
 
 
 
@@ -77,6 +77,7 @@ rof = rofphasechange[0]
 my_divisor = 3
 rof1 = [x/ my_divisor for x in rofphasechange]
 
+# Sets outer layer as "Exo Planet Like" if its water and "Ice Like" if the top layer is ice
 if rofphasechange1[0].strip() != "Water (Valencia)":
     surface = rof1[0] * 1.001
     rof1.insert(0, surface)
@@ -86,9 +87,11 @@ elif rofphasechange1[0][0:2] == "Ice":
     rof1.insert(0, surface)
     rofphasechange1.insert(0, "Exo Planet Ice Surface")
 
+
+#lst_of_sphere holds the sphere objects while rof2 holds the radius of the spheres only
 lst_of_sphere = []
 rof2 = []
-# to make spheres as a incidator for bounds
+# to make spheres as a incidator for layer changes
 for a in rof1:
     a = 20 * a
     bpy.ops.mesh.primitive_uv_sphere_add(radius=a, location=(0.0, 0, 0.0), rotation=(0.0, 0.0, 0.0))
@@ -96,7 +99,8 @@ for a in rof1:
     bpy.ops.object.shade_smooth()
     lst_of_sphere.append(circle)
     rof2.append(a)
-    
+
+#rof_ is set to the outermost sphere radius    
 rof_ = rof2[0]
 
 
@@ -111,13 +115,8 @@ len_sphere = len(lst_of_sphere) - 1
 
 
 
-outer_material = bpy.data.materials.new("Red Material")
-outer_material.diffuse_color = (1, 0, 0, 1)
 
-# Assign the green material to the inner circle
-
-
-
+# Uses each sphere to "cut" the sphere below it in order to get the layered effect
 for i in range(0, len_sphere):
     circle_cut = lst_of_sphere[i].modifiers.new(type="BOOLEAN", name = "circle cut")
     circle_cut.object = lst_of_sphere[i+1]
@@ -131,15 +130,21 @@ for i in range(0, len_sphere):
     
    
     
-
+# Creates cube that will cut all the spheres to get the crossection
 bpy.ops.mesh.primitive_cube_add(size=rof_, location=(0.5*rof_, 0.5*rof_, 0.5*rof_) ,rotation=(0.0, 0.0, 0.0))
 cut_cube = bpy.context.object
 
+# Uses the cube to "cut" each sphere (except the innermost one) to get the crossection view
 for circle in lst_of_sphere[:-1]:
     bool_one = circle.modifiers.new(type="BOOLEAN", name = "bool 1")
     bool_one.object = cut_cube
     bool_one.operation = "DIFFERENCE"
     cut_cube.hide_set(True)
+
+# Lines 146 - 421 are all used to create the material textures
+# Each texture uses Blenders built in nodes to create varied textures
+# To change the textures, select an object in the Layout mode then go to the "Shading" Tab in the top box
+# From there the color, roughness, brightness, and many other features can be controlled
 
 
 
@@ -175,30 +180,6 @@ node = Ice_2.node_tree.nodes["Principled BSDF"]
 node.inputs["Base Color"].default_value = (0.044,0.155,0.509,1)
 
 #Ice Dark 3
-scene = bpy.context.scene
-node_tree = scene.node_tree
-Ice_3 = bpy.data.materials.new(name="Ice 3")
-Ice_3.use_nodes = True
-nodes = Ice_3.node_tree.nodes
-bsdf =  Ice_3.node_tree.nodes['Principled BSDF']
-links = Ice_3.node_tree.links
-# Add a diffuse shader and set its location:    
-texture = nodes.new("ShaderNodeTexNoise")
-texture.location = (-600,100)
-coord = nodes.new("ShaderNodeTexCoord")
-coord.location = (-600,100)
-color_ramp = nodes.new("ShaderNodeValToRGB")
-color_ramp.location = (-300,200)
-links.new(coord.outputs["Object"], texture.inputs["Vector"])
-links.new(texture.outputs["Fac"], color_ramp.inputs["Fac"])
-links.new(color_ramp.outputs["Color"], bsdf.inputs["Base Color"])
-new_color = color_ramp.color_ramp.elements.new(0.591)
-color_ramp.color_ramp.elements[1].color = (0.019,0.034,0.5,1)
-
-
-bsdf.inputs["Base Color"].default_value = (0.08,0.296,1,1)
-bsdf.inputs["Transmission"].default_value = (0.909)
-
 Ice_3 = Ice.copy()
 Ice_3.name = "Ice 3"
 node = Ice_3.node_tree.nodes["Principled BSDF"]
@@ -350,16 +331,6 @@ Rock.name = "Lightest Green Rock"
 color_ramp = Rock.node_tree.nodes["ColorRamp"]
 color_ramp.color_ramp.elements[2].color = (0.435,1,0.476,1)
 
-
-# Blueish Green Rock
-Rock_2B = Rock_3.copy()
-Rock_2B.name = "Lighter Blue Rock"
-color_ramp = Rock_2B.node_tree.nodes["ColorRamp"]
-color_ramp.color_ramp.elements[0].position = (0.454)
-color_ramp.color_ramp.elements[1].position = (0.682)
-color_ramp.color_ramp.elements[2].position = (0.801)
-
-
 #Lava
 scene = bpy.context.scene
 node_tree = scene.node_tree
@@ -454,9 +425,9 @@ links.new(texture.outputs["Color"], color_ramp.inputs["Fac"])
 color_ramp.color_ramp.elements[0].position = 0.136
 color_ramp.color_ramp.elements[1].position = 0.805
 
+# End of texture creation code
 
-
-
+# Dictionary of textures where key represents the material name and value is the blender texture
 colors = {
 'Water (Valencia)':water,
 
@@ -525,8 +496,8 @@ colors = {
 "Si PPv (Oganov)":Rock_4,
 "PPv (Dorogokupets)":Rock_4,
 
-"Rwd (Dorogokupets)":Rock_2B,
-"Akm (Dorogokupets et al.)":Rock_2B,
+"Rwd (Dorogokupets)":Rock_2,
+"Akm (Dorogokupets et al.)":Rock_2,
 
 "Wds (Dorogokupets)":Rock_1,
 
@@ -541,7 +512,7 @@ colors = {
 
 
 
-   
+# Matches up each sphere with its correct material and colors it in   
 for circle in lst_of_sphere:
     index = lst_of_sphere.index(circle)
     material =  rofphasechange1[index].strip()
@@ -550,10 +521,10 @@ for circle in lst_of_sphere:
     
     
     circle.data.materials.append(color)
-    print(color)
+
     
 
-#ADDING SUN AND CAMERA
+#ADDINGSUN AND CAMERA
     
 light_data = bpy.data.lights.new(name="Sun", type='SUN')
 light_data.energy = 10
@@ -577,4 +548,7 @@ camera_object = bpy.data.objects.new('Camera', camera_data)
 bpy.context.scene.collection.objects.link(camera_object)
 camera_object.location = (rof_ + 30,11,6.7)
 camera_object.rotation_euler = (math.radians(80), math.radians(0), math.radians(106))
+
+
+# Hides cube
 cut_cube.hide_render = True
