@@ -429,14 +429,8 @@ color_ramp.color_ramp.elements[1].position = 0.805
 
 # Dictionary of textures where key represents the material name and value is the blender texture
 colors = {
-'Water (Valencia)':water,
 
-'Si Pv (Oganov)' :Rock_3, 
-
-"Si liquid (Mosenfelder)":lava,
-"Si liquid (Wolf)":lava,
 "Fe liquid (Anderson)": lava, 
-
 
 'Fe hcp (Smith)':i_core, 
 "Fe liquid (Dorogokupets)" :lava, 
@@ -448,7 +442,7 @@ colors = {
 "Fe-15Si (Wicks)" :i_core,
 "Fe Dummy":i_core,
 
-
+'Water (Valencia)':water,
 
 'Ice (Valencia)':Ice, 
 "Ice (ExoPlex)":Ice,
@@ -482,6 +476,11 @@ colors = {
 "Ice X (Grande)":Ice_4,
 "Ice X (Hermann)":Ice_4,
 
+ 
+'Si Pv (Oganov)' :Rock_3, 
+
+"Si liquid (Mosenfelder)":lava,
+"Si liquid (Wolf)":lava,
 
 "Brg (Oganov)":Rock_3,
 "Brg (Shim)":Rock_3,
