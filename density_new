@@ -1,0 +1,452 @@
+import ast  #Should be ok in Blender, but check that you can use this
+import re
+import bpy
+
+
+
+
+# selects all objects
+
+for material in bpy.data.materials:
+    material.user_clear()
+    bpy.data.materials.remove(material)
+    
+bpy.ops.object.select_all(action='SELECT')
+bpy.ops.object.delete() 
+
+for o in bpy.data.objects:
+    if o.hide_viewport or o.hide_render or o.hide_get(): 
+        bpy.data.objects.remove(o, do_unlink=True)
+        
+# INSERT FILE PATH IN BETWEEN QUOTATION MARKS
+file_name = r'C:\Users\srivi\Downloads\StructureEarth.txt'
+#DO REGEX HERE
+
+
+
+
+
+radii=[] #Set up the lists we need to put data in
+phase=[]
+with open(file_name, "r+") as file: #open file
+    
+    output=""
+    with open(file_name) as f:
+        for line in f:
+            if not line.isspace():
+                output+=line
+            
+    f= open(file_name,"w")
+    f.write(output)
+    lines = file.readlines()
+    #Deletes all empty lines and rewrites the file
+
+    for line in lines[len(lines):1:-1]: #Read file backwards and last line
+        line = line.strip()
+        div=re.split('\t',line) #Splits each line at tabs - aka splits up columns 
+        radii.append(float(div[1])) #radii in column 1 change to float
+        phase.append(div[6]) #phase name in colun 6
+        
+for area in bpy.context.screen.areas:
+    if area.type == 'VIEW_3D':
+        # Set the viewport shading to Material preview
+        space_data = area.spaces.active
+        if space_data.shading.type != 'MATERIAL':
+            space_data.shading.type = 'MATERIAL'
+        break
+
+
+hydrosphere = (
+'Water (Valencia)',
+'Ice (Valencia)', 
+"Ice (ExoPlex)",
+"Ice supercritical Dummy",
+"Ice supercritical Dummy",
+"Ice (Seager)",
+"Ice Dummy",
+"Ice (FFH 2004)",
+"Ice (FMNR 2009)",
+"Ice Ih",
+"Ice Ih (ExoPlex)",
+'Ice VI (ExoPlex)', 
+"Ice VI (ExoPlex)",
+"Ice VI (Bezacier)",
+'Ice VII (Grande)', 
+"Ice VII' (Grande)",
+"Ice VII (Bezacier)",
+"Ice VII (ExoPlex)",
+"Ice VII (Grande)",
+"Ice VII' (Grande)",
+"Ice VII (FFH2004, Vinet)",
+"Ice VII (FFH2004fit, Vinet fit)",
+"Ice VII (FFH2004, BM)",
+"Ice VII (FFH2004, thermal)",
+"Ice VII (Fei)",
+'Ice X (Grande)'
+"Ice X (Grande)",
+"Ice X (Hermann)",
+)
+
+
+
+core = (
+"Fe liquid (Anderson)", 
+'Fe hcp (Smith)', 
+"Fe liquid (Dorogokupets)", 
+"Fe bcc (Dorogokupets)", 
+"Fe fcc (Dorogokupets)",
+"Fe hcp (Bouchet)", 
+"Fe hcp (Dorogokupets)",
+"Fe-7Si (Wicks)", 
+"Fe-15Si (Wicks)",
+"Fe Dummy"
+)
+
+mantle = (
+'Si Pv (Oganov)', 
+
+"Si liquid (Mosenfelder)",
+"Si liquid (Wolf)",
+
+"Brg (Oganov)",
+"Brg (Shim)",
+"Pv (Dorogokupets)",
+"Si (PREM)",
+"Si (PREM, Zeng)" ,
+"Si (Seager)",
+"Si Dummy",
+"Magnesiowustite (Sotin)",
+
+"Si PPv (Sakai)",
+"Si PPv (Oganov)",
+"PPv (Dorogokupets)",
+
+"Rwd (Dorogokupets)",
+"Akm (Dorogokupets et al.)",
+
+"Wds (Dorogokupets)",
+
+"Fo/Ol (Dorogokupets)",
+"Fo/Ol (Sotin)",
+"En/Opx (Sotin)"
+)
+
+
+    
+dummyphase='name' #Set up a variable to compare to
+rofphasechange=[] #Save radii whenever the phase changes
+for i in range(len(phase)):
+    if phase[i]!=dummyphase: #check if phase changes
+        rofphasechange.append(radii[i])
+        dummyphase=phase[i]
+# this gets desired values for indicator for boundaries
+print(rofphasechange)
+
+
+dummyphase1='name'
+rofphasechange1=[]
+for i in range(len(phase)):
+    if phase[i]!=dummyphase1:
+        rofphasechange1.append(phase[i])
+        dummyphase1=phase[i]
+
+#gets a (radius,phase) pair 
+
+
+
+rof = rofphasechange[0]
+
+#needed for the position for colorRamp as it can only go to 1
+my_divisor = 3
+rof1 = [x/ my_divisor for x in rofphasechange]
+
+if rofphasechange1[0].strip() != "Water (Valencia)":
+    surface = rof1[0] * 1.015
+    rof1.insert(0, surface)
+    rofphasechange1.insert(0, "Exo Planet Surface")
+elif rofphasechange1[0][0:2] == "Ice":
+    surface = rof1[0] * 1.015
+    rof1.insert(0, surface)
+    rofphasechange1.insert(0, "Exo Planet Ice Surface")
+
+lst_of_sphere = []
+rof2 = []
+# to make spheres as a incidator for bounds
+
+bpy.ops.mesh.primitive_uv_sphere_add(radius=10*rof1[0], location=(0.0, 0, 0.0), rotation=(0.0, 0.0, 0.0))
+circle = bpy.context.object
+bpy.ops.object.shade_smooth()
+
+bpy.ops.mesh.primitive_uv_sphere_add(radius=10*rof1[0]+0.0005, location=(0.0, 0, 0.0), rotation=(0.0, 0.0, 0.0))
+circle_2 = bpy.context.object
+bpy.ops.object.shade_smooth()
+
+rof_ = 10*rof1[0]
+
+
+len_sphere = len(lst_of_sphere) - 1
+
+
+bpy.ops.mesh.primitive_cube_add(size=rof_, location=(0.5*rof_, 0.5*rof_, 0.5*rof_) ,rotation=(0.0, 0.0, 0.0))
+cut_cube = bpy.context.object
+
+
+lst_of_sphere.append(circle)
+circle = lst_of_sphere[0]
+bool_one = circle.modifiers.new(type="BOOLEAN", name = "bool 1")
+bool_one.object = cut_cube
+bool_one.operation = "DIFFERENCE"
+cut_cube.hide_set(True)
+
+bool_two = circle_2.modifiers.new(type="BOOLEAN", name = "bool 2")
+bool_two.object = cut_cube
+bool_two.operation = "DIFFERENCE"
+cut_cube.hide_set(True)
+
+bool_three = circle_2.modifiers.new(type="BOOLEAN", name = "bool 2")
+bool_three.object = circle
+bool_three.operation = "DIFFERENCE"
+cut_cube.hide_set(True)
+
+
+#Surface Mars
+scene = bpy.context.scene
+node_tree = scene.node_tree
+ice_surface = bpy.data.materials.new(name="Density Color")
+ice_surface.use_nodes = True
+nodes = ice_surface.node_tree.nodes
+links = ice_surface.node_tree.links
+bsdf =  ice_surface.node_tree.nodes['Principled BSDF']
+bsdf.inputs["Specular"].default_value = 0
+
+color_ramp_2 = nodes.new("ShaderNodeValToRGB")
+color_ramp_2.location = (-500,300)
+ 
+texture_gradient = nodes.new("ShaderNodeTexGradient")
+texture_gradient.location = (-750, 300)
+texture_gradient.gradient_type = "SPHERICAL"
+
+
+links.new(texture_gradient.outputs["Color"], color_ramp_2.inputs["Fac"])
+
+mapping= nodes.new("ShaderNodeMapping")
+mapping.location = (-900,300)
+links.new(mapping.outputs["Vector"], texture_gradient.inputs["Vector"])
+mapping.inputs["Location"].default_value[0] = -1.02
+mapping.inputs["Location"].default_value[1] = -1.02
+mapping.inputs["Location"].default_value[2] = -1.02
+mapping.inputs["Scale"].default_value[0] = 2.04
+mapping.inputs["Scale"].default_value[1] = 2.04
+mapping.inputs["Scale"].default_value[2] = 2.04
+
+
+tex_coord = nodes.new("ShaderNodeTexCoord")
+tex_coord.location = (-1200, 300)
+links.new(tex_coord.outputs["Generated"], mapping.inputs["Vector"])
+links.new(color_ramp_2.outputs["Color"], bsdf.inputs["Base Color"])
+
+#Surface Mars
+scene = bpy.context.scene
+node_tree = scene.node_tree
+surface = bpy.data.materials.new(name="Exoplanet Surface")
+surface.use_nodes = True
+nodes = surface.node_tree.nodes
+links = surface.node_tree.links
+bsdf =  surface.node_tree.nodes['Principled BSDF']
+
+material = surface.node_tree.nodes["Material Output"]
+color_ramp = nodes.new("ShaderNodeValToRGB")
+color_ramp.location = (-300,300)
+texture = nodes.new("ShaderNodeTexNoise")
+texture.inputs["Roughness"].default_value = 0.600
+texture.inputs["Detail"].default_value = 4.1
+texture.inputs["Scale"].default_value = 3.8
+texture.location = (-600,300)
+texture_2 = nodes.new("ShaderNodeTexNoise")
+texture_2.inputs["Roughness"].default_value = 0.708
+texture_2.inputs["Scale"].default_value = 4.5
+texture_2.inputs["Detail"].default_value = 5.9
+texture_2.location = (-900,300)
+links.new(texture_2.outputs["Color"], texture.inputs["Vector"])
+links.new(texture.outputs["Fac"], color_ramp.inputs[0])
+links.new(color_ramp.outputs["Color"],bsdf.inputs["Base Color"] )
+color_ramp.color_ramp.elements[0].position = 0.382
+color_ramp.color_ramp.elements[1].position = 0.750
+color_ramp.color_ramp.elements[0].color = (0.2,0.1,0.028,1)
+color_ramp.color_ramp.elements[1].color = (0,0,0,1)
+
+#ALL CODE BELOW HERE IS FOR COLOR MAP/ DENSITY STUFF 
+#CODE ABOVE IS ALL FOR MAKING SPHERES AND IS FROM OTHER FOLDER
+#if you want to get rid of the sphere just delete the code above and work with the color map below
+#
+
+Layers = {
+"Fe liquid (Anderson)": "core",
+
+'Fe hcp (Smith)':"core",
+"Fe liquid (Dorogokupets)" : "core",
+"Fe bcc (Dorogokupets)" :"core",
+"Fe fcc (Dorogokupets)" : "core",
+"Fe hcp (Bouchet)": "core",
+"Fe hcp (Dorogokupets)": "core",
+"Fe-7Si (Wicks)":"core",
+"Fe-15Si (Wicks)" :"core",
+"Fe Dummy":"core",
+
+# Hydrosphere
+'Water (Valencia)':"Hydrosphere",
+
+'Ice (Valencia)':"Hydrosphere",
+"Ice (ExoPlex)":"Hydrosphere",
+"Ice supercritical Dummy":"Hydrosphere",
+"Ice supercritical Dummy":"Hydrosphere",
+"Ice (Seager)":"Hydrosphere",
+"Ice Dummy":"Hydrosphere",
+"Ice (FFH 2004)":"Hydrosphere",
+"Ice (FMNR 2009)":"Hydrosphere",
+
+"Ice Ih":"Hydrosphere",
+"Ice Ih (ExoPlex)":"Hydrosphere",
+
+'Ice VI (ExoPlex)':"Hydrosphere",
+"Ice VI (ExoPlex)":"Hydrosphere",
+"Ice VI (Bezacier)":"Hydrosphere",
+
+'Ice VII (Grande)':"Hydrosphere",
+"Ice VII' (Grande)":"Hydrosphere",
+"Ice VII (Bezacier)":"Hydrosphere",
+"Ice VII (ExoPlex)":"Hydrosphere",
+"Ice VII (Grande)":"Hydrosphere",
+"Ice VII' (Grande)":"Hydrosphere",
+"Ice VII (FFH2004, Vinet)":"Hydrosphere",
+"Ice VII (FFH2004fit, Vinet fit)":"Hydrosphere",
+"Ice VII (FFH2004, BM)":"Hydrosphere",
+"Ice VII (FFH2004, thermal)":"Hydrosphere",
+"Ice VII (Fei)":"Hydrosphere",
+
+'Ice X (Grande)':"Hydrosphere",
+"Ice X (Grande)":"Hydrosphere",
+"Ice X (Hermann)":"Hydrosphere",
+
+# Mantle
+'Si Pv (Oganov)' :"Mantle",
+
+"Si liquid (Mosenfelder)":"Mantle",
+"Si liquid (Wolf)":"Mantle",
+
+"Brg (Oganov)":"Mantle",
+"Brg (Shim)":"Mantle",
+"Pv (Dorogokupets)":"Mantle",
+"Si (PREM)":"Mantle",
+"Si (PREM, Zeng)": "Mantle" ,
+"Si (Seager)":"Mantle",
+"Si Dummy":"Mantle",
+"Magnesiowustite (Sotin)":"Mantle",
+
+"Si PPv (Sakai)":"Mantle",
+"Si PPv (Oganov)":"Mantle",
+"PPv (Dorogokupets)":"Mantle",
+
+"Rwd (Dorogokupets)":"Mantle",
+"Akm (Dorogokupets et al.)":"Mantle",
+
+"Wds (Dorogokupets)":"Mantle",
+
+"Fo/Ol (Dorogokupets)":"Mantle",
+"Fo/Ol (Sotin)":"Mantle",
+"En/Opx (Sotin)":"Mantle",
+
+}
+
+
+
+#Color Options: viridis, plasma, summer, autumn, winter, neon, gem, eclipse, sepia
+file_name = r"C:\Users\srivi\Downloads\colormaps.txt"
+colorname='neon' #choose name from above
+inf=open(file_name,'r') ##file of 1000 points from each matplotlib colormaps
+lines=inf.readlines()
+for l in range(len(lines)):
+    div=re.split('\s',lines[l])
+    if div[1]==colorname: #Find line with name provided
+        cmap=ast.literal_eval(lines[l+1]) #Cmap=list of 1000 colors
+
+    
+dummyphase='name' #Set up a variable to compare to
+rofphasechange=[] #Save radii whenever the phase changes
+for i in range(len(phase)):
+    if phase[i]!=dummyphase: #check if phase changes
+        rofphasechange.append(radii[i])
+        dummyphase=phase[i]
+print(rofphasechange1)       
+layers = []
+
+for phase in rofphasechange1[1:]:
+    layers.append(Layers[phase.strip()])
+rofphasechange_real = rofphasechange1 [1:]
+res = {rofphasechange_real[i]: rofphasechange[i] for i in range(len(rofphasechange_real))}
+print(res)
+
+print(layers)
+
+inf=open(r"C:\Users\srivi\Downloads\Structure443.txt",'r')
+lines=inf.readlines()
+rad=[]
+dens=[]
+material = []
+for line in lines[1:-1]:
+    div=re.split('\s{2,}',line)
+    rad.append(float(div[1])) #radius Earth Radii
+    dens.append(float(div[4])) #density g/cm^3
+    material.append(div[6])
+    inf.close()
+print(material)
+print(rad)
+
+    
+mindens=1  #minimum density for colormap
+maxdens=15 #maximum desnity for colormap
+
+denscolors=[] #list of colors 
+densrad=rad[::42]  #list of radii where denscolors colors occur
+densmaterial = material[::42]
+for i in dens[::42]: #Read every 5th value of density and radii
+    normalize=(maxdens-i)/(maxdens-mindens)  #Find position from 0-1 of density between min and max desnity
+    location=int(normalize*1000) #Round the above number to nearest thousandth and multiply by 1000
+    denscolors.append(cmap[location]) #get colors to apply to given density
+    
+
+print(len(densrad))
+print(len(densmaterial))
+
+
+
+
+
+normalized_radius = []
+old_min = min(densrad)
+old_max = max(densrad)
+new_min = 0
+new_max = 1
+
+
+
+color_ramp.color_ramp.elements.remove(color_ramp.color_ramp.elements[0])
+
+
+for old_radius in densrad:
+    new_value = ((old_radius - old_min) / (old_max - old_min)) + 0
+    normalized_radius.append(new_value)
+
+
+location = 0
+for radius in normalized_radius:
+    color_ramp_2.color_ramp.elements.new(radius)
+    color_ramp_2.color_ramp.elements[normalized_radius.index(radius)].color = denscolors[normalized_radius.index(radius)]
+
+print(denscolors)    
+
+color_ramp_2.color_ramp.elements.remove(color_ramp_2.color_ramp.elements[-1])
+
+
+circle.data.materials.append(ice_surface)
+circle_2.data.materials.append(surface)
