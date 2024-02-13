@@ -1,5 +1,6 @@
 # Blender-Magrathea
 Blender 3D planet builder: Takes in Magrathea outputs and automatically builds realistic and appealing 3-D interior models
+*Must use Blender 3.4* https://ftp.halifax.rwth-aachen.de/blender/release/Blender3.4/
 
  <p align="center">
 <img width = "300" src="planet443%235.png"/>
